@@ -1,0 +1,22 @@
+{
+  "name": "study-web",
+  "private": true,
+  "description": "Preview and editor bundles for Study (built into src/web/dist by web/build)",
+  "dependencies": {
+    "@codemirror/commands": "^6.8.0",
+    "@codemirror/lang-markdown": "^6.3.0",
+    "@codemirror/language": "^6.11.0",
+    "@codemirror/language-data": "^6.5.0",
+    "@codemirror/search": "^6.5.0",
+    "@codemirror/state": "^6.5.0",
+    "@codemirror/view": "^6.36.0",
+    "@lezer/highlight": "^1.2.0",
+    "@vscode/markdown-it-katex": "1.1.1",
+    "esbuild": "0.25.8",
+    "highlight.js": "11.11.1",
+    "katex": "0.16.22",
+    "markdown-it": "14.1.0",
+    "markdown-it-front-matter": "0.2.4",
+    "morphdom": "2.7.4"
+  }
+}

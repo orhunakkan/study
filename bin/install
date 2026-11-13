@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+"$ROOT/bin/build"
+cd "$ROOT/pkgbuild"
+makepkg -fsi "$@"
+
+# Study is the default app for Markdown files.
+xdg-mime default study.desktop text/markdown text/x-markdown

@@ -1,0 +1,6 @@
+/build/
+/pkgbuild/pkg/
+/pkgbuild/src/
+*.pkg.tar.*
+/web/node_modules/
+/src/web/dist/

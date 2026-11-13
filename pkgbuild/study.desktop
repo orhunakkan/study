@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Study
+Comment=Read folders of Markdown, rendered
+Comment[tr]=Markdown klasörlerini işlenmiş hâliyle okuyun
+Exec=study %F
+Icon=study
+Terminal=false
+Categories=Office;Viewer;TextEditor;Utility;
+MimeType=text/markdown;text/x-markdown;inode/directory;
+Keywords=markdown;md;notes;reader;preview;
+StartupWMClass=study

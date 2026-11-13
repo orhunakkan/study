@@ -1,0 +1,28 @@
+#!/bin/sh
+# Bundles the page's scripts into src/web/dist, which the binary compiles in.
+# Run by bin/build when the bundle is missing or older than its sources.
+set -eu
+
+WEB="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+OUT="$WEB/../src/web/dist"
+cd "$WEB"
+
+[ -d node_modules ] || npm ci --silent --no-audit --no-fund
+
+mkdir -p "$OUT/katex/fonts"
+npx esbuild app.js --bundle --minify --format=iife --target=chrome120 --log-level=warning --outfile="$OUT/app.js"
+npx esbuild worker.js --bundle --minify --format=iife --target=chrome120 --log-level=warning --outfile="$OUT/worker.js"
+cp index.html style.css "$OUT/"
+cp node_modules/katex/dist/katex.min.css "$OUT/katex/"
+cp node_modules/katex/dist/fonts/*.woff2 "$OUT/katex/fonts/"
+
+# The resource list for the bundle, so new KaTeX fonts need no hand edits.
+{
+  echo '<RCC>'
+  echo '    <qresource prefix="/web">'
+  (cd "$OUT" && find . -type f ! -name web.qrc | sed 's|^\./||' | sort | while read -r f; do
+    echo "        <file>$f</file>"
+  done)
+  echo '    </qresource>'
+  echo '</RCC>'
+} > "$OUT/web.qrc"

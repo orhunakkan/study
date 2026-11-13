@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#FFD60A"/>
+  <!-- an open book -->
+  <path d="M32 19c-5-3.5-11.5-4.5-18-3.5v29c6.5-1 13 0 18 3.5c5-3.5 11.5-4.5 18-3.5v-29c-6.5-1-13 0-18 3.5z"
+        fill="#1c1c1e"/>
+  <path d="M32 21v26" stroke="#FFD60A" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M18.5 24.5c3.5-.3 6.8.3 9.5 1.6M18.5 30.5c3.5-.3 6.8.3 9.5 1.6M18.5 36.5c3.5-.3 6.8.3 9.5 1.6M45.5 24.5c-3.5-.3-6.8.3-9.5 1.6M45.5 30.5c-3.5-.3-6.8.3-9.5 1.6"
+        stroke="#FFD60A" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+</svg>

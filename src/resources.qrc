@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="Main.qml">Main.qml</file>
+        <file alias="Sidebar.qml">Sidebar.qml</file>
+        <file alias="FileGlyph.qml">FileGlyph.qml</file>
+        <file alias="TabStrip.qml">TabStrip.qml</file>
+        <file alias="EmptyState.qml">EmptyState.qml</file>
+        <file alias="FindBar.qml">FindBar.qml</file>
+        <file alias="StatusLine.qml">StatusLine.qml</file>
+        <file alias="QuickOpen.qml">QuickOpen.qml</file>
+        <file alias="HelpOverlay.qml">HelpOverlay.qml</file>
+        <file alias="ConfirmDialog.qml">ConfirmDialog.qml</file>
+        <file alias="DialogButton.qml">DialogButton.qml</file>
+        <file alias="DialogPanel.qml">DialogPanel.qml</file>
+        <file alias="i18n/en.json">i18n/en.json</file>
+        <file alias="i18n/tr.json">i18n/tr.json</file>
+    </qresource>
+</RCC>
