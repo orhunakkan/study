@@ -29,6 +29,7 @@ It is built the way Omarchy's own apps are: C++ and Qt Quick, one binary, keyboa
 - **Double-click to edit:** double-clicking the rendered text opens the source with the cursor on that line. Switching back and forth keeps your place in the document.
 - **Links work:** a link to another Markdown file opens it in a tab (and `file.md#heading` scrolls to the heading), `#heading` links scroll the page, and web links open in your browser.
 - **Live reload:** a file changed by another program (Sublime Text, `git pull`, an AI agent) updates in its tab. A tab with unsaved edits is never overwritten; it asks whether to reload or keep your version.
+- **Pull from git:** when the folder is a git repository, a small button on the folder's row shows how many new commits the remote has and pulls them (fast-forward only) with one click.
 - **Go to File** (Ctrl+P) with fuzzy search over every Markdown file in the folder.
 - **Find in the page** (Ctrl+F), **zoom** (Ctrl+= / Ctrl+-), and a **hideable sidebar** (Ctrl+K Ctrl+B).
 - **Picks up where you left off:** the folder, the tabs, each tab's mode and scroll position, and the window size come back the next time you start it.
@@ -118,6 +119,16 @@ Study watches every open file:
 - **A tab with edits** shows a bar: **Reload** takes the version on disk and drops your edits; **Keep Mine** keeps your edits, and your next save overwrites the file.
 - **A deleted or moved file** keeps its tab (its name struck through) with a note; saving writes it back.
 
+### Pulling a git repository
+
+When the opened folder is in a git repository whose branch tracks a remote branch, the folder's row in the sidebar gets a pull button on the right. It's faint while you're up to date. Study runs `git fetch` in the background when the folder opens and every 10 minutes after that, and once the remote has commits you don't, the button turns the accent colour with their count. Hover over it to see the branch it pulls from.
+
+Clicking it runs `git pull --ff-only`, and the status line says how it went (`Pulled 3 commits from origin/main.`). Pulled files reach the sidebar and your tabs like any other change on disk: open tabs reload, and a tab with unsaved edits asks first.
+
+Study never merges, rebases or overwrites anything. If your branch and the remote have both moved on, or the pull would overwrite uncommitted changes, it stops and tells you; sort it out in a terminal. Git can't ask for a password or SSH key passphrase from Study, so the pull works when your SSH agent or credential helper already has them; otherwise the status line says to pull once in a terminal. Background fetches that fail (offline, say) stay quiet.
+
+The count updates after each fetch and whenever the window comes back into focus, so a pull or commit made in a terminal shows up when you return.
+
 ### Go to File
 
 **Ctrl+P** lists every Markdown file in the folder (skipping `.git`, `node_modules` and the other excluded folders). Type any part of the path, letters in order, and the best matches rise to the top: runs of letters, the starts of words and the file name count most. Use the arrows and Enter, or click.
@@ -173,6 +184,7 @@ The document area is a single web page inside Qt WebEngine, the Chromium engine 
 - Editing uses one CodeMirror 6 view with a separate editor state (text, selection and undo history) per tab.
 - The page and the C++ side talk over Qt WebChannel through a small `Bridge` object (`src/bridge.h`): the C++ side tells the page which documents are open and which is active, and the page reports edits and scroll positions and hands back text to save.
 - The page loads from a private `study://app/` scheme compiled into the binary, and a document's local images come through `study://file/…`, so the page never gets general `file://` access.
+- Git runs as a background process (`src/gitrepo.cpp`) with prompts turned off (`GIT_TERMINAL_PROMPT=0`, no askpass), with a timeout, and with results for a folder that's no longer open thrown away.
 - A second `study` process finds the first through a local socket (`study-<uid>`), hands over its paths, and exits.
 
 ## Files
@@ -224,6 +236,7 @@ src/main.cpp              app setup, the study:// scheme, one-window handoff
 src/backend.{h,cpp}       folder, tabs, files, saving, watching, session
 src/bridge.{h,cpp}        what the document page can call and hear
 src/filetree.{h,cpp}      the sidebar's filtered, sorted folder tree
+src/gitrepo.{h,cpp}       the folder's git repository: fetch, count, pull
 src/tabs.{h,cpp}          the tab list model
 src/schemehandler.*       serves study://app and study://file
 src/singleinstance.*      the local socket for later launches

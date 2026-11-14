@@ -1,3 +1,5 @@
 {
-  "%n file(s) have unsaved changes.": { "one": "%n file has unsaved changes.", "other": "%n files have unsaved changes." }
+  "%n file(s) have unsaved changes.": { "one": "%n file has unsaved changes.", "other": "%n files have unsaved changes." },
+  "Pulled %n commit(s) from %1.": { "one": "Pulled %n commit from %1.", "other": "Pulled %n commits from %1." },
+  "Pull %n new commit(s) from %1": { "one": "Pull %n new commit from %1", "other": "Pull %n new commits from %1" }
 }

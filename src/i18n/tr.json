@@ -60,5 +60,17 @@
   "Couldn't read %1.": "%1 okunamadı.",
   "Couldn't save %1: %2": "%1 kaydedilemedi: %2",
   "The folder chooser failed: %1": "Klasör seçici başarısız oldu: %1",
-  "The XDG desktop portal file chooser is not available.": "XDG masaüstü portalı dosya seçicisi kullanılamıyor."
+  "The XDG desktop portal file chooser is not available.": "XDG masaüstü portalı dosya seçicisi kullanılamıyor.",
+  "Pull from %1": "%1 dalından çek",
+  "Pull %n new commit(s) from %1": { "one": "%1 dalından %n yeni commit çek", "other": "%1 dalından %n yeni commit çek" },
+  "Pulling from %1…": "%1 dalından çekiliyor…",
+  "Pulled %n commit(s) from %1.": { "one": "%1 dalından %n commit çekildi.", "other": "%1 dalından %n commit çekildi." },
+  "Already up to date with %1.": "%1 ile zaten güncel.",
+  "Couldn't pull.": "Çekilemedi.",
+  "Couldn't pull: %1": "Çekilemedi: %1",
+  "Couldn't pull: git took too long and was stopped.": "Çekilemedi: git çok uzun sürdü ve durduruldu.",
+  "Couldn't pull: this branch and %1 have both changed. Merge or rebase in a terminal.": "Çekilemedi: hem bu dal hem %1 değişmiş. Bir terminalde merge ya da rebase yapın.",
+  "Couldn't pull: it would overwrite changes in this folder. Commit or stash them first.": "Çekilemedi: bu klasördeki değişikliklerin üzerine yazılırdı. Önce commit ya da stash yapın.",
+  "Couldn't pull: git needs a password or key it can't ask for here. Pull once in a terminal.": "Çekilemedi: git burada soramadığı bir parola ya da anahtar istiyor. Bir kez terminalden çekin.",
+  "Couldn't pull: the remote can't be reached right now.": "Çekilemedi: uzak depoya şu an ulaşılamıyor."
 }

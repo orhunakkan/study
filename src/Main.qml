@@ -31,6 +31,8 @@ ApplicationWindow {
         property real sidebarWidth: 280
         property bool sidebarVisible: true
     }
+    // Back from a terminal: recount what the repository is behind (no network).
+    onActiveChanged: if (active) backend.git.refresh()
     onWidthChanged: prefs.width = width
     onHeightChanged: prefs.height = height
 

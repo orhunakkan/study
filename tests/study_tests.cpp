@@ -1,5 +1,6 @@
 #include <QDir>
 #include <QFile>
+#include <QProcess>
 #include <QSignalSpy>
 #include <QTemporaryDir>
 #include <QtTest>
@@ -7,6 +8,7 @@
 #include "backend.h"
 #include "bridge.h"
 #include "filetree.h"
+#include "gitrepo.h"
 #include "theme.h"
 #include "translator.h"
 
@@ -222,7 +224,116 @@ private slots:
         QVERIFY(translator.translate("Main", "Quit").isNull());
     }
 
+    void gitIgnoresFoldersOutsideARepository()
+    {
+        QTemporaryDir dir;
+        GitRepo repo;
+        repo.setFolder(dir.path());
+        QTRY_VERIFY(!repo.busy());
+        QVERIFY(!repo.available());
+
+        // A repository with nothing to pull from has no button either.
+        QVERIFY(git(dir.path(), {"init", "-q"}));
+        repo.setFolder(dir.path());
+        QTRY_VERIFY(!repo.busy());
+        QVERIFY(!repo.topLevel().isEmpty());
+        QVERIFY(!repo.available());
+    }
+
+    void gitCountsAndPullsNewCommits()
+    {
+        QTemporaryDir dir;
+        const QString mine = dir.filePath("mine"), theirs = dir.filePath("theirs");
+        QVERIFY(makeRemote(dir.path()));
+        write(theirs + "/notes.md", "two\n");
+        QVERIFY(git(theirs, {"commit", "-qam", "two"}));
+        write(theirs + "/more.md", "three\n");
+        QVERIFY(git(theirs, {"add", "."}));
+        QVERIFY(git(theirs, {"commit", "-qm", "three"}));
+
+        // Opened before the remote moved on: the first fetch finds both.
+        GitRepo repo;
+        QSignalSpy messages(&repo, &GitRepo::message);
+        repo.setFolder(mine + "/sub");
+        QTRY_VERIFY(repo.available());
+        QCOMPARE(repo.upstream(), QString("origin/main"));
+        QCOMPARE(repo.behind(), 0);
+        QVERIFY(git(theirs, {"push", "-q"}));
+        repo.fetch();
+        QTRY_COMPARE(repo.behind(), 2);
+
+        repo.pull();
+        QVERIFY(repo.pulling());
+        QTRY_VERIFY(!repo.pulling());
+        QTRY_COMPARE(messages.count(), 1);
+        QVERIFY(messages.at(0).at(0).toString().startsWith("Pulled 2 commit"));
+        QCOMPARE(read(mine + "/notes.md"), QByteArray("two\n"));
+        QVERIFY(QFile::exists(mine + "/more.md"));
+        QTRY_COMPARE(repo.behind(), 0);
+
+        repo.pull();
+        QTRY_COMPARE(messages.count(), 2);
+        QVERIFY(messages.at(1).at(0).toString().startsWith("Already up to date"));
+    }
+
+    void gitRefusesToPullADivergedBranch()
+    {
+        QTemporaryDir dir;
+        const QString mine = dir.filePath("mine"), theirs = dir.filePath("theirs");
+        QVERIFY(makeRemote(dir.path()));
+        write(theirs + "/notes.md", "theirs\n");
+        QVERIFY(git(theirs, {"commit", "-qam", "theirs"}));
+        QVERIFY(git(theirs, {"push", "-q"}));
+        write(mine + "/notes.md", "mine\n");
+        QVERIFY(git(mine, {"commit", "-qam", "mine"}));
+
+        GitRepo repo;
+        QSignalSpy messages(&repo, &GitRepo::message);
+        repo.setFolder(mine);
+        QTRY_VERIFY(repo.available());
+        repo.pull();
+        QTRY_COMPARE(messages.count(), 1);
+        QVERIFY2(messages.at(0).at(0).toString().contains("both changed"), qPrintable(messages.at(0).at(0).toString()));
+        QCOMPARE(read(mine + "/notes.md"), QByteArray("mine\n"));
+        QVERIFY(!repo.pulling());
+    }
+
+    void backendFollowsTheFoldersRepository()
+    {
+        QTemporaryDir dir;
+        QVERIFY(makeRemote(dir.path()));
+        Backend backend(dir.filePath("session.ini"));
+        backend.openFolder(dir.filePath("mine"));
+        QTRY_VERIFY(backend.git()->available());
+        backend.openFolder(dir.path());
+        QVERIFY(!backend.git()->available());
+    }
+
 private:
+    // dir/remote.git with one commit, cloned to dir/mine and dir/theirs.
+    static bool makeRemote(const QString &dir)
+    {
+        if (!git(dir, {"init", "-q", "--bare", "-b", "main", "remote.git"}) || !git(dir, {"clone", "-q", "remote.git", "theirs"}))
+            return false;
+        QDir(dir).mkpath("theirs/sub");
+        write(dir + "/theirs/notes.md", "one\n");
+        write(dir + "/theirs/sub/a.md", "a\n");
+        return git(dir + "/theirs", {"add", "."}) && git(dir + "/theirs", {"commit", "-qm", "one"})
+            && git(dir + "/theirs", {"push", "-q", "-u", "origin", "main"})
+            && git(dir, {"clone", "-q", "remote.git", "mine"});
+    }
+    static bool git(const QString &dir, const QStringList &arguments)
+    {
+        QProcess process;
+        process.setWorkingDirectory(dir);
+        process.start("git", QStringList{"-c", "user.name=Test", "-c", "user.email=test@example.com",
+                                         "-c", "commit.gpgsign=false", "-c", "init.defaultBranch=main"} + arguments);
+        if (!process.waitForFinished(10000) || process.exitCode() != 0) {
+            qWarning() << "git" << arguments << process.readAllStandardError();
+            return false;
+        }
+        return true;
+    }
     static void write(const QString &path, const QByteArray &contents)
     {
         QFile file(path);

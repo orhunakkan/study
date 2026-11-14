@@ -33,29 +33,31 @@ Rectangle {
             implicitHeight: 26
             padding: 0
             leftPadding: 12
+            rightPadding: 6
             onClicked: tree.visible = !tree.visible
             background: Rectangle { color: parent.hovered ? Qt.alpha(theme.colors.foreground, 0.06) : "transparent" }
-            contentItem: Row {
+            contentItem: RowLayout {
                 spacing: 6
                 Label {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 10
+                    Layout.preferredWidth: 10
                     text: tree.visible ? "▾" : "▸"
                     color: theme.colors.dark_foreground
                     font.pixelSize: 11
                 }
                 FileGlyph {
-                    anchors.verticalCenter: parent.verticalCenter
                     folder: true
                     open: tree.visible
                     color: theme.colors.foreground
                 }
                 Label {
-                    anchors.verticalCenter: parent.verticalCenter
+                    Layout.fillWidth: true
                     text: backend.rootName
+                    elide: Text.ElideRight
                     color: theme.colors.bright_foreground
                     font.pixelSize: 13
                 }
+                // The folder is a git repository with a branch to pull from.
+                PullButton {}
             }
         }
 

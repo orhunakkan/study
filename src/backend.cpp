@@ -30,6 +30,7 @@ Backend::Backend(const QString &sessionFile, FilePicker *picker, QObject *parent
     : QObject(parent),
       m_tree(new FileTree(this)),
       m_tabs(new TabsModel(this)),
+      m_git(new GitRepo(this)),
       m_bridge(new Bridge(this)),
       m_picker(picker),
       m_sessionFile(sessionFile.isEmpty()
@@ -59,6 +60,10 @@ Backend::Backend(const QString &sessionFile, FilePicker *picker, QObject *parent
     m_messageTimer.setSingleShot(true);
     m_messageTimer.setInterval(5000);
     connect(&m_messageTimer, &QTimer::timeout, this, &Backend::clearMessage);
+
+    // What a pull brings in reaches the tree and the tabs through the
+    // watchers, like any other change on disk.
+    connect(m_git, &GitRepo::message, this, &Backend::setMessage);
 
     if (m_picker) {
         connect(m_picker, &FilePicker::folderSelected, this, [this](const QUrl &url) {
@@ -148,6 +153,7 @@ void Backend::openFolder(const QString &path) {
         return;
     m_root = clean;
     m_tree->setRoot(clean);
+    m_git->setFolder(clean);
     emit rootChanged();
     scheduleSession();
 }

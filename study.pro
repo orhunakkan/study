@@ -9,6 +9,7 @@ HEADERS += \
     src/bridge.h \
     src/filepicker.h \
     src/filetree.h \
+    src/gitrepo.h \
     src/portalfilepicker.h \
     src/schemehandler.h \
     src/singleinstance.h \
@@ -21,6 +22,7 @@ SOURCES += \
     src/backend.cpp \
     src/bridge.cpp \
     src/filetree.cpp \
+    src/gitrepo.cpp \
     src/portalfilepicker.cpp \
     src/schemehandler.cpp \
     src/singleinstance.cpp \

@@ -9,6 +9,7 @@
 #include <QTimer>
 
 #include "filetree.h"
+#include "gitrepo.h"
 #include "tabs.h"
 
 #include "bridge.h"
@@ -23,6 +24,7 @@ class Backend : public QObject {
     Q_PROPERTY(QString rootName READ rootName NOTIFY rootChanged)
     Q_PROPERTY(FileTree *tree READ tree CONSTANT)
     Q_PROPERTY(TabsModel *tabs READ tabs CONSTANT)
+    Q_PROPERTY(GitRepo *git READ git CONSTANT)
     Q_PROPERTY(Bridge *bridge READ bridge CONSTANT)
     Q_PROPERTY(int currentIndex READ currentIndex NOTIFY currentChanged)
     Q_PROPERTY(QString currentPath READ currentPath NOTIFY currentChanged)
@@ -44,6 +46,7 @@ public:
     QString rootName() const;
     FileTree *tree() const { return m_tree; }
     TabsModel *tabs() const { return m_tabs; }
+    GitRepo *git() const { return m_git; }
     Bridge *bridge() const { return m_bridge; }
     int currentIndex() const { return m_current; }
     QString currentPath() const;
@@ -127,6 +130,7 @@ private:
 
     FileTree *m_tree;
     TabsModel *m_tabs;
+    GitRepo *m_git;
     Bridge *m_bridge;
     FilePicker *m_picker;
     QString m_sessionFile;
